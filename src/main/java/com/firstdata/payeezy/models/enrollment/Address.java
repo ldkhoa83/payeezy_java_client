@@ -16,7 +16,7 @@ public class Address {
 	private String addressLine2;
 
 	
-	@JsonProperty("state_province")
+	@JsonProperty("state")
 	private String state;
 	
 	@JsonProperty("city")
@@ -27,8 +27,6 @@ public class Address {
 	
 	@JsonProperty("email")
 	private String email;
-	
-	private Phone phone;
 	
 	@JsonProperty("zip_postal_code")
 	private String zip;
@@ -76,7 +74,6 @@ public class Address {
 		return state;
 	}
 	
-	@JsonProperty("state_province")
 	public void setState(String state) {
 		this.state = state;
 	}
@@ -115,46 +112,7 @@ public class Address {
 		this.email = email;
 	}
 
-	@JsonProperty("phone")
-	public Phone getPhone() {
-		return phone;
-	}
 
-	@JsonProperty("phone")
-	public void setPhone(Phone phone) {
-		this.phone = phone;
-	}
-
-	public static class Phone{
-		@JsonProperty("type")
-		private String type;
-		@JsonProperty("number")
-		private String number;
-		@JsonProperty("primary")
-		private String primary;
-		
-		public String getType() {
-			return type;
-		}
-		public void setType(String type) {
-			this.type = type;
-		}
-		public String getNumber() {
-			return number;
-		}
-		public void setNumber(String number) {
-			this.number = number;
-		}
-		public String getPrimary() {
-			return primary;
-		}
-		public void setPrimary(String primary) {
-			this.primary = primary;
-		}
-		
-		
-		
-	}
 	
 	
 	

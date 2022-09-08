@@ -10,10 +10,14 @@ public class APIResourceConstants {
     public static final String LIVE_URL = "https://api-cert.payeezy.com";
     public static final String PRIMARY_TRANSACTIONS = "/v1/transactions";
     public static final String EXCHANGE_RATE = "/v1/transactions/exchange_rate";
-    public static final String SECURE_TOKEN_URL = "/v1/securitytokens";
-    public static final String ACH_ENROLLMENT_URL = "/v1/ach/consumer/enrollment";
+    public static final String SECURE_TOKEN_URL = "/v1/transactions/tokens";
+    public static final String ACH_ENROLLMENT_URL = "/v1/ach/consumerprofile";
     public static final String ACH_CLOSE = "/v1/ach/consumer/enrollment/close";
     public static final String ACH_MICRO_DEPOSIT = "/v1/ach/consumer/enrollment/baa";
+
+    public static final String ACH_PAYMENT = "/v1/ach/transactions";
+
+    public static final String EVENTS = "/v1/events";
 
 
 

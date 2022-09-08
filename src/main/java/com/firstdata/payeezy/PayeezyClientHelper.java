@@ -2,9 +2,11 @@ package com.firstdata.payeezy;
 
 import com.firstdata.payeezy.client.PayeezyClient;
 import com.firstdata.payeezy.client.PayeezyRequestOptions;
+import com.firstdata.payeezy.models.enrollment.ACHPayRequest;
 import com.firstdata.payeezy.models.enrollment.BAARequest;
 import com.firstdata.payeezy.models.enrollment.EnrollmentRequest;
 import com.firstdata.payeezy.models.exception.ApplicationRuntimeException;
+import com.firstdata.payeezy.models.transaction.EventQuery;
 import com.firstdata.payeezy.models.transaction.PayeezyResponse;
 import com.firstdata.payeezy.models.transaction.TransactionRequest;
 import com.firstdata.payeezy.models.transaction.TransactionResponse;
@@ -17,8 +19,10 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,10 +37,14 @@ public class PayeezyClientHelper {
 
     private PayeezyClient payeezyClient;
 
-    private JSONHelper jsonHelper = new JSONHelper();
+    @Autowired
+    private JSONHelper jsonHelper;
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @PostConstruct
     private void init(){
@@ -50,7 +58,7 @@ public class PayeezyClientHelper {
         		PayeezyRequestOptions requestOptions = new PayeezyRequestOptions(map.get("apikey"),map.get("token"), map.get("secret"));
 				String url= map.get("url");
 	        	System.out.println("Info from VCAP_SERVICES for service name: " + serviceName + " is: " + url + " " + requestOptions.toString());
-	            payeezyClient = new PayeezyClient(requestOptions, url);
+	            payeezyClient = new PayeezyClient(requestOptions, url, restTemplate);
         	} else {
         		throw new ApplicationRuntimeException("Can't find Payeezy service information in VCAP_SERVICES");
         	}
@@ -64,7 +72,7 @@ public class PayeezyClientHelper {
         	String url = env.getProperty("url");
         	String proxyHost = env.getProperty("proxyHost");
         	String proxyPort = env.getProperty("proxyPort");
-        	payeezyClient = new PayeezyClient(new PayeezyRequestOptions(key, token, secret, proxyHost, proxyPort), url);
+        	payeezyClient = new PayeezyClient(new PayeezyRequestOptions(key, token, secret, proxyHost, proxyPort), url, restTemplate);
         }
     }
 
@@ -85,6 +93,11 @@ public class PayeezyClientHelper {
 
     public PayeezyResponse doSecondaryTransaction(String id, TransactionRequest transactionRequest) throws Exception {
         ResponseEntity<TransactionResponse> responseEntity = payeezyClient.post(transactionRequest, id);
+        return new PayeezyResponse(responseEntity.getStatusCode().value(), jsonHelper.getJSONObject(responseEntity.getBody()));
+    }
+
+    public PayeezyResponse doTokenization(TransactionRequest transactionRequest) throws IOException {
+        ResponseEntity<TransactionResponse> responseEntity = payeezyClient.tokenize(transactionRequest);
         return new PayeezyResponse(responseEntity.getStatusCode().value(), jsonHelper.getJSONObject(responseEntity.getBody()));
     }
 
@@ -110,6 +123,11 @@ public class PayeezyClientHelper {
         return new PayeezyResponse(responseEntity.getStatusCode().value(), responseEntity.getBody());
     }
 
+    public PayeezyResponse payACHPayment(ACHPayRequest achPayRequest) throws Exception {
+        ResponseEntity<String> responseEntity = payeezyClient.payACH(achPayRequest);
+        return new PayeezyResponse(responseEntity.getStatusCode().value(), responseEntity.getBody());
+    }
+
     /**
      * Update ACH Enrollment info
      * @param enrollmentRequest
@@ -129,6 +147,13 @@ public class PayeezyClientHelper {
      */
     public PayeezyResponse closeACHEnrollment(EnrollmentRequest enrollmentRequest) throws Exception {
         ResponseEntity<String> responseEntity= payeezyClient.closeACHEnrollment(enrollmentRequest);
+
+        return new PayeezyResponse(responseEntity.getStatusCode().value(), responseEntity.getBody());
+    }
+
+
+    public PayeezyResponse getEvents(EventQuery eventQuery){
+        ResponseEntity<String> responseEntity = payeezyClient.getEvents(eventQuery);
 
         return new PayeezyResponse(responseEntity.getStatusCode().value(), responseEntity.getBody());
     }

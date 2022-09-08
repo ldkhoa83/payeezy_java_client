@@ -2,6 +2,8 @@ package com.firstdata.payeezy.models.enrollment;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
+
 public class EnrollmentRequest extends ACHPayTokenRequest {
 
 	@JsonProperty("applicaiton")
@@ -33,7 +35,22 @@ public class EnrollmentRequest extends ACHPayTokenRequest {
 	private String pin;
 	
 
-	
+	@JsonProperty("transaction_type")
+	private String transactionType;
+
+	@JsonProperty("method")
+	private String transactionMethod;
+
+
+	@JsonProperty("connectpay_payment_number")
+	private String connectpayPaymentNumber;
+
+	@JsonProperty("online_bank_transaction_id")
+	private String onlineBankTransactionId;
+
+
+	@JsonProperty("phone")
+	private ArrayList<Phone> phones;
 
 	public EnrollmentApp getEnrollmentApplication() {
 		return enrollmentApplication;
@@ -76,11 +93,42 @@ public class EnrollmentRequest extends ACHPayTokenRequest {
 		this.pin = pin;
 	}
 
+	public String getTransactionType() {
+		return transactionType;
+	}
 
-	
+	public void setTransactionType(String transactionType) {
+		this.transactionType = transactionType;
+	}
+
+	public String getTransactionMethod() {
+		return transactionMethod;
+	}
+
+	public void setTransactionMethod(String transactionMethod) {
+		this.transactionMethod = transactionMethod;
+	}
+
+	public String getConnectpayPaymentNumber() {
+		return connectpayPaymentNumber;
+	}
+
+	public void setConnectpayPaymentNumber(String connectpayPaymentNumber) {
+		this.connectpayPaymentNumber = connectpayPaymentNumber;
+	}
+
+	public String getOnlineBankTransactionId() {
+		return onlineBankTransactionId;
+	}
+
+	public void setOnlineBankTransactionId(String onlineBankTransactionId) {
+		this.onlineBankTransactionId = onlineBankTransactionId;
+	}
+
+
+
 	public static class EnrollmentUser {
-		
-		
+
 		@JsonProperty("routing_number")
 		private String routingNumber;
 		
@@ -95,6 +143,9 @@ public class EnrollmentRequest extends ACHPayTokenRequest {
 		
 		@JsonProperty("driver_license_state")
 		private String driverLicenseState;
+
+		@JsonProperty("corporate_account_flag")
+		private String accountFlag;
 		
 		
 		public String getRoutingNumber() {
@@ -127,8 +178,12 @@ public class EnrollmentRequest extends ACHPayTokenRequest {
 		public void setDriverLicenseState(String driverLicenseState) {
 			this.driverLicenseState = driverLicenseState;
 		}
-		
-				
+		public String getAccountFlag() {
+			return accountFlag;
+		}
+		public void setAccountFlag(String accountFlag) {
+			this.accountFlag = accountFlag;
+		}
 	}
 	
 	public static class AdditionalPersonalInfo {
@@ -170,9 +225,44 @@ public class EnrollmentRequest extends ACHPayTokenRequest {
 		public void setTermsAndConditionVersion(String termsAndConditionVersion) {
 			this.termsAndConditionVersion = termsAndConditionVersion;
 		}
-		
-		
-		
+
+	}
+
+	public ArrayList<Phone> getPhones() {
+		return phones;
+	}
+
+	public void setPhones(ArrayList<Phone> phones) {
+		this.phones = phones;
+	}
+
+	public static class Phone{
+		@JsonProperty("type")
+		private String type;
+		@JsonProperty("number")
+		private String number;
+		@JsonProperty("primary")
+		private String primary;
+
+		public String getType() {
+			return type;
+		}
+		public void setType(String type) {
+			this.type = type;
+		}
+		public String getNumber() {
+			return number;
+		}
+		public void setNumber(String number) {
+			this.number = number;
+		}
+		public String getPrimary() {
+			return primary;
+		}
+		public void setPrimary(String primary) {
+			this.primary = primary;
+		}
+
 	}
 	
 

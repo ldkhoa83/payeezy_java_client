@@ -1,18 +1,20 @@
 package com.firstdata.payeezy.client;
 
 
+import com.firstdata.payeezy.models.enrollment.ACHPayRequest;
 import com.firstdata.payeezy.models.enrollment.BAARequest;
 import com.firstdata.payeezy.models.enrollment.EnrollmentRequest;
 import com.firstdata.payeezy.models.exception.ApplicationRuntimeException;
+import com.firstdata.payeezy.models.transaction.EventQuery;
 import com.firstdata.payeezy.models.transaction.TransactionRequest;
 import com.firstdata.payeezy.models.transaction.TransactionResponse;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.InetSocketAddress;
@@ -22,14 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@Component
+//@Component
 public class PayeezyClient {
 
-	private static Logger logger = Logger.getLogger(PayeezyClient.class);
+	private static Logger logger =  LoggerFactory.getLogger(PayeezyClient.class);
 
 	private static Charset UTF_8 = Charset.forName("UTF-8");
 
-	private final RestTemplate restTemplate = new RestTemplate();
+	private final RestTemplate restTemplate;
 
 	private String transactionsUrl;
 	
@@ -37,9 +39,9 @@ public class PayeezyClient {
 
 	private String baseUrl;
 
-	private PayeezyClient(){}
 
-	public PayeezyClient(PayeezyRequestOptions requestOptions, String transactionsUrl) {
+	public PayeezyClient(PayeezyRequestOptions requestOptions, String transactionsUrl, RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
 		List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
 		interceptors.add(new PayeezyRequestInterceptor(requestOptions));
 		if(transactionsUrl == null || "".equals(transactionsUrl.trim())){
@@ -78,8 +80,13 @@ public class PayeezyClient {
 	}
 
 	public ResponseEntity<TransactionResponse> post(TransactionRequest request, String id){
-		//logger.info("Secondary Transaction: {} {} ", this.secondaryTransactionUrl, jsonHelper.getJSONObject(request) );
+//		logger.info("Secondary Transaction: {} {} ", this.secondaryTransactionUrl, jsonHelper.getJSONObject(request) );
 		return this.restTemplate.postForEntity(this.secondaryTransactionUrl, request,TransactionResponse.class, id);
+	}
+
+	public ResponseEntity<TransactionResponse> tokenize(TransactionRequest request){
+		String url = this.baseUrl+APIResourceConstants.SECURE_TOKEN_URL;
+		return this.restTemplate.postForEntity(url, request, TransactionResponse.class);
 	}
 
 	/**
@@ -104,6 +111,11 @@ public class PayeezyClient {
 		return this.restTemplate.postForEntity(url, microDeposit, String.class);
 	}
 
+	public ResponseEntity<String> payACH(ACHPayRequest request) {
+		String url = this.baseUrl+ APIResourceConstants.ACH_PAYMENT;
+		return this.restTemplate.postForEntity(url, request, String.class);
+	}
+
 	/**
 	 * Update ACH Enrollment info
 	 * @param enrollmentRequest
@@ -125,6 +137,16 @@ public class PayeezyClient {
 	public ResponseEntity<String> closeACHEnrollment(EnrollmentRequest enrollmentRequest) throws Exception {
 		String url = this.baseUrl+APIResourceConstants.ACH_CLOSE;
 		return this.restTemplate.postForEntity(url, enrollmentRequest, String.class);
+	}
+
+	public ResponseEntity<String> getEvents(EventQuery eventQuery){
+		String url = this.baseUrl + APIResourceConstants.EVENTS +
+				"?from={from}&to={to}&offset={offset}&limit={limit}&eventType=TRANSACTION_STATUS";
+		Map<String,String> eventQueryMap = Map.of("from",eventQuery.getFrom(),
+				"to",eventQuery.getTo(),
+				"offset",eventQuery.getOffset().toString(),
+				"limit",eventQuery.getLimit().toString());
+		return get(url,eventQueryMap);
 	}
 
 	public ResponseEntity<String> get(String URL, Map<String, String> queryMap) {

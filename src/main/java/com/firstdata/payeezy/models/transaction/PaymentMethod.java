@@ -2,7 +2,14 @@ package com.firstdata.payeezy.models.transaction;
 
 
 public enum PaymentMethod {
-    CREDIT_CARD("credit_card"),TOKEN("token"),VALUELINK("valuelink"),THREEDS("3ds"),TELE_CHECK("tele_check"),PAYPAL("paypal"), ACH("ach");
+    CREDIT_CARD("credit_card"),
+    TOKEN("token"),
+    VALUELINK("valuelink"),
+    THREEDS("3ds"),
+    TELE_CHECK("tele_check"),
+    PAYPAL("paypal"),
+    ACH("ach"),
+    DIRECT_DEBIT("direct_debit");
 
     private String value;
 

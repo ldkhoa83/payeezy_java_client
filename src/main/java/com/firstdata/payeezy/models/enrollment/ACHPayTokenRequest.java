@@ -1,9 +1,6 @@
 package com.firstdata.payeezy.models.enrollment;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.firstdata.payeezy.models.transaction.Phone;
-
-import java.util.ArrayList;
 
 public class ACHPayTokenRequest {
 
@@ -18,13 +15,14 @@ public class ACHPayTokenRequest {
 	
 	@JsonProperty("last_name")
 	String lastName;
-	
+
+	@JsonProperty("email")
+	private String email;
+
 	@JsonProperty("billing_address")
 	private Address address;
 	
-	@JsonProperty("additional_phones")
-	private ArrayList<Phone> phones;
-	
+
 	
 	public String getSubscriberId() {
 		return subscriberId;
@@ -56,13 +54,12 @@ public class ACHPayTokenRequest {
 	public void setAddress(Address address) {
 		this.address = address;
 	}
-	public ArrayList<Phone> getPhones() {
-		return phones;
+
+	public String getEmail() {
+		return email;
 	}
-	public void setPhones(ArrayList<Phone> phones) {
-		this.phones = phones;
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
-	
-	
-	
 }
